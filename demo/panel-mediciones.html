@@ -1,0 +1,486 @@
+<title>Panel de Mediciones · Ekoglass</title>
+<style>
+  :root{
+    --bg:#EEF3F7; --bg-grid:rgba(10,20,32,.035);
+    --surface:#FFFFFF; --surface-2:#F6F9FB;
+    --ink:#0A1420; --muted:#5B6B7E; --faint:#8697A8;
+    --line:#E3E9EF; --track:#E9EEF3;
+    --brand:#ED3425; --data:#C7220F; --data-soft:rgba(199,34,15,.12);
+    --teal:#0891B2; --teal-soft:rgba(8,145,178,.12);
+    --good:#16A34A; --warn:#B45309;
+    --wa:#1FA855;
+    --radius:16px; --radius-sm:11px;
+    --shadow:0 1px 2px rgba(10,20,32,.04), 0 12px 30px -18px rgba(10,20,32,.22);
+    --maxw:1180px;
+    --ff: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0A1420; --bg-grid:rgba(255,255,255,.04);
+      --surface:#131F2E; --surface-2:#0F1A27;
+      --ink:#EAF0F6; --muted:#93A4B7; --faint:#69798C;
+      --line:#223247; --track:#1E2E41;
+      --brand:#F35847; --data:#EF5949; --data-soft:rgba(239,89,73,.16);
+      --teal:#3AA6BE; --teal-soft:rgba(58,166,190,.16);
+      --good:#34C77B; --warn:#E0964A;
+      --wa:#25D366;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 16px 34px -20px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#EEF3F7; --bg-grid:rgba(10,20,32,.035);
+    --surface:#FFFFFF; --surface-2:#F6F9FB;
+    --ink:#0A1420; --muted:#5B6B7E; --faint:#8697A8;
+    --line:#E3E9EF; --track:#E9EEF3;
+    --brand:#ED3425; --data:#C7220F; --data-soft:rgba(199,34,15,.12);
+    --teal:#0891B2; --teal-soft:rgba(8,145,178,.12);
+    --good:#16A34A; --warn:#B45309; --wa:#1FA855;
+    --shadow:0 1px 2px rgba(10,20,32,.04), 0 12px 30px -18px rgba(10,20,32,.22);
+  }
+  :root[data-theme="dark"]{
+    --bg:#0A1420; --bg-grid:rgba(255,255,255,.04);
+    --surface:#131F2E; --surface-2:#0F1A27;
+    --ink:#EAF0F6; --muted:#93A4B7; --faint:#69798C;
+    --line:#223247; --track:#1E2E41;
+    --brand:#F35847; --data:#EF5949; --data-soft:rgba(239,89,73,.16);
+    --teal:#3AA6BE; --teal-soft:rgba(58,166,190,.16);
+    --good:#34C77B; --warn:#E0964A; --wa:#25D366;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 16px 34px -20px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0}
+  .app{
+    font-family:var(--ff); color:var(--ink);
+    background:
+      linear-gradient(to right, var(--bg-grid) 1px, transparent 1px) 0 0/120px 100%,
+      var(--bg);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+    font-variant-numeric:tabular-nums;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 20px}
+  .num{font-variant-numeric:tabular-nums; letter-spacing:-.01em}
+
+  /* Header */
+  header{
+    position:sticky; top:0; z-index:20;
+    backdrop-filter:saturate(1.4) blur(8px);
+    background:color-mix(in srgb, var(--bg) 82%, transparent);
+    border-bottom:1px solid var(--line);
+  }
+  .bar{display:flex; align-items:center; gap:14px; padding:13px 20px; max-width:var(--maxw); margin:0 auto}
+  .brand{display:flex; align-items:center; gap:10px; font-weight:700}
+  .logo{
+    width:30px; height:30px; border-radius:8px; display:grid; place-items:center;
+    background:linear-gradient(150deg, var(--brand), #9C1B0C); color:#fff;
+    font-weight:800; font-size:14px; box-shadow:0 4px 12px -4px rgba(237,52,37,.6);
+  }
+  .brand b{font-size:15px; letter-spacing:-.01em}
+  .brand span{display:block; font-size:11px; color:var(--muted); font-weight:500; letter-spacing:.01em}
+  .spacer{flex:1}
+  .chip{
+    font-size:11px; font-weight:600; padding:5px 10px; border-radius:999px;
+    border:1px solid var(--line); color:var(--muted); background:var(--surface);
+    white-space:nowrap;
+  }
+  .chip.demo{color:var(--brand); border-color:color-mix(in srgb,var(--brand) 35%, var(--line)); background:var(--data-soft)}
+  .period{display:inline-flex; align-items:center; gap:7px}
+  .period .dot{width:6px;height:6px;border-radius:999px;background:var(--good); box-shadow:0 0 0 3px color-mix(in srgb,var(--good) 22%, transparent)}
+  .tbtn{
+    appearance:none; border:1px solid var(--line); background:var(--surface); color:var(--ink);
+    width:34px; height:34px; border-radius:9px; cursor:pointer; font-size:15px; display:grid; place-items:center;
+    transition:background .15s, border-color .15s;
+  }
+  .tbtn:hover{border-color:var(--muted)}
+  .tbtn:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+
+  /* Intro */
+  .intro{padding:26px 0 8px}
+  .intro h1{margin:0; font-size:clamp(1.5rem,3.4vw,2.15rem); letter-spacing:-.025em; text-wrap:balance; font-weight:800}
+  .intro p{margin:8px 0 0; color:var(--muted); max-width:64ch; font-size:14.5px; line-height:1.55}
+
+  /* Grid */
+  .grid{display:grid; grid-template-columns:repeat(12,1fr); gap:16px; padding:18px 0 44px}
+  .card{
+    grid-column:span 12; background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:18px 18px 16px; box-shadow:var(--shadow);
+    min-width:0;
+  }
+  .card h2{margin:0; font-size:13px; font-weight:700; letter-spacing:-.005em; display:flex; align-items:center; gap:8px}
+  .card .sub{margin:3px 0 0; font-size:12px; color:var(--faint)}
+  .card .hd{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px}
+  .tag{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
+       border:1px solid var(--line); padding:3px 7px; border-radius:6px}
+
+  @media(min-width:900px){
+    .c4{grid-column:span 4} .c5{grid-column:span 5} .c6{grid-column:span 6}
+    .c7{grid-column:span 7} .c8{grid-column:span 8}
+  }
+
+  /* KPI tiles */
+  .kpis{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:6px 0 2px}
+  @media(min-width:640px){.kpis{grid-template-columns:repeat(3,1fr)}}
+  @media(min-width:980px){.kpis{grid-template-columns:repeat(5,1fr)}}
+  .kpi{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:15px 15px 13px; box-shadow:var(--shadow); position:relative; overflow:hidden}
+  .kpi .k-label{font-size:11.5px; color:var(--muted); font-weight:600; letter-spacing:.01em}
+  .kpi .k-val{font-size:26px; font-weight:800; margin-top:7px; letter-spacing:-.03em; line-height:1}
+  .kpi .k-foot{display:flex; align-items:center; gap:6px; margin-top:9px; font-size:11.5px; color:var(--muted)}
+  .delta{display:inline-flex; align-items:center; gap:3px; font-weight:700; padding:2px 6px; border-radius:999px; font-size:11px}
+  .delta.up{color:var(--good); background:color-mix(in srgb,var(--good) 14%, transparent)}
+  .delta.down{color:var(--warn); background:color-mix(in srgb,var(--warn) 15%, transparent)}
+  .kpi.accent{background:linear-gradient(160deg, var(--data-soft), transparent 60%), var(--surface)}
+  .kpi.accent .k-val{color:var(--data)}
+
+  /* Bars */
+  .rows{display:flex; flex-direction:column; gap:11px}
+  .row{display:grid; grid-template-columns:1fr; gap:6px}
+  .row .r-top{display:flex; align-items:baseline; justify-content:space-between; gap:10px}
+  .row .r-name{font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px; min-width:0}
+  .row .r-name small{color:var(--faint); font-weight:500; font-size:11.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .row .r-val{font-size:13px; font-weight:700; white-space:nowrap}
+  .row .r-val em{font-style:normal; color:var(--muted); font-weight:500; font-size:11.5px; margin-left:5px}
+  .track{height:9px; border-radius:999px; background:var(--track); overflow:hidden; position:relative}
+  .fill{height:100%; border-radius:999px; background:var(--data); transform-origin:left; animation:grow .9s cubic-bezier(.22,1,.36,1) both}
+  .fill.teal{background:var(--teal)}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @media(prefers-reduced-motion:reduce){.fill{animation:none}}
+
+  /* Ranked list (contactos por punto de venta) */
+  .rank{display:flex; flex-direction:column; gap:10px}
+  .rk{display:grid; grid-template-columns:26px 1fr auto; align-items:center; gap:12px; padding:9px 10px; border-radius:12px; transition:background .15s}
+  .rk:hover{background:var(--surface-2)}
+  .rk .n{width:26px; height:26px; border-radius:8px; display:grid; place-items:center; font-size:12px; font-weight:800; color:var(--muted); background:var(--track)}
+  .rk.top .n{color:#fff; background:linear-gradient(150deg,var(--brand),#9C1B0C)}
+  .rk .body{min-width:0}
+  .rk .t{font-size:13.5px; font-weight:650; display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  .rk .loc{font-size:11.5px; color:var(--faint)}
+  .rk .mini{height:7px; border-radius:999px; background:var(--track); margin-top:7px; overflow:hidden}
+  .rk .mini i{display:block; height:100%; background:var(--data); border-radius:999px; animation:grow .9s cubic-bezier(.22,1,.36,1) both}
+  .rk .amt{text-align:right}
+  .rk .amt b{font-size:16px; font-weight:800; letter-spacing:-.02em}
+  .rk .amt span{display:block; font-size:11px; color:var(--muted)}
+  .pin{font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--wa)}
+
+  /* Channel tiles */
+  .chan{display:flex; flex-direction:column; gap:12px}
+  .ch{border:1px solid var(--line); border-radius:12px; padding:13px 14px; background:var(--surface-2)}
+  .ch .ch-top{display:flex; align-items:center; justify-content:space-between; gap:10px}
+  .ch .ch-name{font-size:13px; font-weight:650; display:flex; align-items:center; gap:8px}
+  .ico{width:22px; height:22px; border-radius:7px; display:grid; place-items:center; color:#fff; font-size:12px; font-weight:700}
+  .ch .ch-val{font-weight:800; font-size:15px}
+  .ch .ch-bar{height:8px; border-radius:999px; background:var(--track); margin-top:10px; overflow:hidden}
+  .ch .ch-bar i{display:block; height:100%; border-radius:999px; animation:grow .9s cubic-bezier(.22,1,.36,1) both}
+
+  /* Line chart */
+  .chartwrap{position:relative}
+  svg.chart{display:block; width:100%; height:auto}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:6px}
+  .lg{display:inline-flex; align-items:center; gap:7px; font-size:12px; color:var(--muted); font-weight:600}
+  .lg .sw{width:11px; height:11px; border-radius:3px}
+  .tip{
+    position:absolute; pointer-events:none; opacity:0; transform:translate(-50%,-8px);
+    background:var(--ink); color:var(--bg); padding:7px 10px; border-radius:9px; font-size:12px; font-weight:600;
+    white-space:nowrap; box-shadow:0 8px 20px -8px rgba(0,0,0,.5); transition:opacity .12s; z-index:5;
+  }
+  .tip b{color:#fff}
+  :root[data-theme="dark"] .tip, .app .tip{color:#fff}
+
+  /* Split / segmented bars */
+  .seg{display:flex; height:16px; border-radius:999px; overflow:hidden; background:var(--track); gap:2px; padding:0}
+  .seg i{height:100%; display:block}
+  .seglg{display:flex; flex-direction:column; gap:9px; margin-top:14px}
+  .seglg .r{display:flex; align-items:center; gap:9px; font-size:12.5px}
+  .seglg .r .sw{width:10px;height:10px;border-radius:3px}
+  .seglg .r .nm{flex:1; color:var(--ink); font-weight:600}
+  .seglg .r .vv{color:var(--muted); font-weight:700}
+
+  footer{padding:8px 0 40px}
+  .note{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow); font-size:13px; color:var(--muted); line-height:1.6}
+  .note b{color:var(--ink)}
+  .stack{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+  .stack .s{font-size:11.5px; font-weight:600; padding:5px 10px; border-radius:8px; border:1px solid var(--line); color:var(--ink); background:var(--surface-2)}
+  .stack .s b{color:var(--brand)}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+
+<div class="app">
+  <header>
+    <div class="bar">
+      <div class="brand">
+        <div class="logo">E</div>
+        <div><b>Ekoglass</b><span>Panel de mediciones</span></div>
+      </div>
+      <div class="spacer"></div>
+      <span class="chip period"><span class="dot"></span>Últimos 30 días</span>
+      <span class="chip demo">DEMO · datos de ejemplo</span>
+      <button class="tbtn" id="themeBtn" aria-label="Cambiar tema">◐</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section class="intro">
+      <h1>Lo que pasa dentro del sitio, en una sola pantalla</h1>
+      <p>Así se vería el reporte de Ekoglass: cuánta gente entra, qué mira y por cuánto tiempo, desde dónde llega y —lo más importante— cuántos contactos genera cada punto de venta. Se actualiza solo y se puede ver desde el celular.</p>
+    </section>
+
+    <!-- KPIs -->
+    <div class="kpis">
+      <div class="kpi">
+        <div class="k-label">Visitas</div>
+        <div class="k-val num">8.420</div>
+        <div class="k-foot"><span class="delta up">▲ 18%</span> vs. mes anterior</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">Visitantes únicos</div>
+        <div class="k-val num">6.180</div>
+        <div class="k-foot"><span class="delta up">▲ 12%</span> vs. mes anterior</div>
+      </div>
+      <div class="kpi accent">
+        <div class="k-label">Contactos generados</div>
+        <div class="k-val num">342</div>
+        <div class="k-foot"><span class="delta up">▲ 26%</span> WhatsApp + llamadas</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">Tasa de contacto</div>
+        <div class="k-val num">4,1%</div>
+        <div class="k-foot"><span class="delta up">▲ 0,6 pts</span> de las visitas</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">Tiempo medio</div>
+        <div class="k-val num">2m 38s</div>
+        <div class="k-foot"><span class="delta up">▲ 14s</span> por visita</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Visitas over time -->
+      <div class="card c8">
+        <div class="hd">
+          <div><h2>Visitas por día</h2><p class="sub">Tráfico diario del último mes</p></div>
+          <span class="tag">Tendencia</span>
+        </div>
+        <div class="chartwrap">
+          <svg class="chart" id="lineChart" viewBox="0 0 720 260" preserveAspectRatio="none" role="img" aria-label="Gráfico de visitas por día"></svg>
+          <div class="tip" id="tip"></div>
+        </div>
+        <p class="sub" style="margin-top:8px">Pasá el cursor sobre el gráfico para ver el detalle de cada día.</p>
+      </div>
+
+      <!-- Canal de contacto -->
+      <div class="card c4">
+        <div class="hd">
+          <div><h2>Contactos por canal</h2><p class="sub">Cómo eligen escribir</p></div>
+        </div>
+        <div class="chan">
+          <div class="ch">
+            <div class="ch-top">
+              <span class="ch-name"><span class="ico" style="background:var(--wa)">✆</span>WhatsApp</span>
+              <span class="ch-val num">71%</span>
+            </div>
+            <div class="ch-bar"><i style="width:71%;background:var(--data)"></i></div>
+          </div>
+          <div class="ch">
+            <div class="ch-top">
+              <span class="ch-name"><span class="ico" style="background:var(--teal)">➤</span>Cómo llegar</span>
+              <span class="ch-val num">18%</span>
+            </div>
+            <div class="ch-bar"><i style="width:18%;background:var(--data)"></i></div>
+          </div>
+          <div class="ch">
+            <div class="ch-top">
+              <span class="ch-name"><span class="ico" style="background:var(--muted)">☎</span>Llamada</span>
+              <span class="ch-val num">11%</span>
+            </div>
+            <div class="ch-bar"><i style="width:11%;background:var(--data)"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contactos por punto de venta — HERO card -->
+      <div class="card c7">
+        <div class="hd">
+          <div><h2>★ Contactos por punto de venta</h2><p class="sub">Qué representante recibe más consultas desde la web</p></div>
+          <span class="tag">342 en total</span>
+        </div>
+        <div class="rank" id="rank"></div>
+      </div>
+
+      <!-- Origen geográfico -->
+      <div class="card c5">
+        <div class="hd">
+          <div><h2>Desde dónde nos visitan</h2><p class="sub">Participación por provincia</p></div>
+        </div>
+        <div class="rows" id="geo"></div>
+      </div>
+
+      <!-- Secciones más vistas -->
+      <div class="card c6">
+        <div class="hd">
+          <div><h2>Qué partes del sitio se ven más</h2><p class="sub">% de visitas que llega a cada sección (scroll)</p></div>
+        </div>
+        <div class="rows" id="sections"></div>
+      </div>
+
+      <!-- Dispositivo + Fuente -->
+      <div class="card c6">
+        <div class="hd">
+          <div><h2>Dispositivo y origen del tráfico</h2><p class="sub">Con qué entran y cómo llegan</p></div>
+        </div>
+
+        <div style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:2px 0 9px">Dispositivo</div>
+        <div class="seg" id="segDevice"></div>
+        <div class="seglg" id="lgDevice"></div>
+
+        <div style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:20px 0 9px">Fuente de tráfico</div>
+        <div class="seg" id="segSource"></div>
+        <div class="seglg" id="lgSource"></div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="note">
+        <b>¿Cómo lo verían?</b> Un panel como este, con acceso propio y actualización automática, o un resumen mensual en PDF. Además sumamos <b>mapas de calor y grabaciones anónimas</b> de sesiones para ver, literalmente, hasta dónde llega y en qué se detiene cada visitante.
+        <div class="stack">
+          <span class="s"><b>Visitas y audiencia</b> · GA4</span>
+          <span class="s"><b>Mapas de calor + grabaciones</b> · Microsoft Clarity</span>
+          <span class="s"><b>Contactos por punto de venta</b> · eventos a medida</span>
+          <span class="s"><b>Panel a medida</b> · Looker Studio</span>
+        </div>
+        <p style="margin:12px 0 0;font-size:12px;color:var(--faint)">Datos de ejemplo con fines de demostración. Los valores reales empiezan a registrarse desde el día que se activa la medición.</p>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  // theme toggle
+  document.getElementById('themeBtn').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    if(!cur){ cur=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'; }
+    root.setAttribute('data-theme', cur==='dark'?'light':'dark');
+  });
+
+  function cssv(n){return getComputedStyle(document.body).getPropertyValue(n).trim();}
+
+  // ---- data ----
+  var visitas=[188,205,231,214,176,150,171,236,255,268,249,242,182,201,281,299,318,293,270,214,236,332,351,372,338,321,247,268,372,410];
+  var contactos=[6,8,9,8,6,4,6,9,10,11,10,10,7,8,11,12,14,13,11,8,9,13,15,16,14,13,10,11,16,18];
+
+  // ---- ranked puntos de venta ----
+  var puntos=[
+    {n:'Ekoglass Centro', loc:'CABA', v:78, pin:true},
+    {n:'Ekoglass Córdoba', loc:'Córdoba', v:64, pin:true},
+    {n:'Vidrios del Norte', loc:'Vicente López, BA', v:51, pin:true},
+    {n:'Cristalería Palermo', loc:'Palermo, CABA', v:43},
+    {n:'Cristales Rosario', loc:'Rosario, SF', v:32},
+    {n:'DVH La Plata', loc:'La Plata, BA', v:24},
+    {n:'Vidriería Cuyo', loc:'Mendoza', v:18},
+    {n:'Aberturas del Mar', loc:'Mar del Plata, BA', v:14},
+    {n:'DVH Tucumán', loc:'S. M. de Tucumán', v:10},
+    {n:'Aberturas Patagonia', loc:'Neuquén', v:8}
+  ];
+  var maxP=Math.max.apply(null,puntos.map(function(p){return p.v}));
+  document.getElementById('rank').innerHTML=puntos.map(function(p,i){
+    return '<div class="rk'+(i===0?' top':'')+'">'+
+      '<div class="n">'+(i+1)+'</div>'+
+      '<div class="body"><div class="t">'+p.n+(p.pin?' <span class="pin">▲ recomendado</span>':'')+'</div>'+
+      '<div class="loc">'+p.loc+'</div>'+
+      '<div class="mini"><i style="width:'+(p.v/maxP*100).toFixed(1)+'%"></i></div></div>'+
+      '<div class="amt"><b class="num">'+p.v+'</b><span>contactos</span></div>'+
+    '</div>';
+  }).join('');
+
+  // ---- geo ----
+  var geo=[['Buenos Aires',41],['CABA',22],['Córdoba',13],['Santa Fe',9],['Mendoza',6],['Neuquén',4],['Tucumán',3],['Otras',2]];
+  fillRows('geo',geo,'%');
+
+  // ---- sections (scroll depth) ----
+  var secs=[['Inicio (Hero)',100],['Qué es Ekoglass',86],['Aplicaciones',71],['Soluciones',58],['Proyectos',44],['Puntos de venta',39],['Preguntas frecuentes',27],['Contacto',21]];
+  fillRows('sections',secs,'%');
+
+  function fillRows(id,data,suf){
+    var max=Math.max.apply(null,data.map(function(d){return d[1]}));
+    document.getElementById(id).innerHTML=data.map(function(d){
+      return '<div class="row"><div class="r-top"><span class="r-name">'+d[0]+'</span>'+
+        '<span class="r-val num">'+String(d[1]).replace('.',',')+suf+'</span></div>'+
+        '<div class="track"><div class="fill" style="width:'+(d[1]/max*100)+'%"></div></div></div>';
+    }).join('');
+  }
+
+  // ---- segmented bars ----
+  function seg(barId,lgId,data){
+    var cols=[cssv('--data'),cssv('--teal'),cssv('--muted'),cssv('--faint')];
+    document.getElementById(barId).innerHTML=data.map(function(d,i){
+      return '<i style="width:'+d[1]+'%;background:'+cols[i%cols.length]+'"></i>';
+    }).join('');
+    document.getElementById(lgId).innerHTML=data.map(function(d,i){
+      return '<div class="r"><span class="sw" style="background:'+cols[i%cols.length]+'"></span>'+
+        '<span class="nm">'+d[0]+'</span><span class="vv num">'+d[1]+'%</span></div>';
+    }).join('');
+  }
+  seg('segDevice','lgDevice',[['Móvil',63],['Escritorio',32],['Tablet',5]]);
+  seg('segSource','lgSource',[['Google (búsqueda)',48],['Directo',24],['Instagram',16],['Otros (Facebook, etc.)',12]]);
+
+  // ---- line chart ----
+  var svg=document.getElementById('lineChart'), tip=document.getElementById('tip');
+  var W=720,H=260, pad={l:8,r:8,t:14,b:26};
+  var n=visitas.length, maxV=Math.max.apply(null,visitas), maxC=Math.max.apply(null,contactos);
+  function X(i){return pad.l+(W-pad.l-pad.r)*(i/(n-1));}
+  function Yv(v){return H-pad.b-(H-pad.t-pad.b)*(v/(maxV*1.08));}
+  function Yc(v){return H-pad.b-(H-pad.t-pad.b)*(v/(maxC*1.08));}
+  function path(arr,Y){var d='';for(var i=0;i<n;i++){d+=(i?'L':'M')+X(i).toFixed(1)+' '+Y(arr[i]).toFixed(1)+' ';}return d;}
+  var NS='http://www.w3.org/2000/svg';
+  function el(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  function draw(){
+    svg.innerHTML='';
+    var data=cssv('--data'), teal=cssv('--teal'), line=cssv('--line'), muted=cssv('--muted');
+    // gridlines
+    for(var g=0;g<=3;g++){var y=pad.t+(H-pad.t-pad.b)*(g/3);
+      svg.appendChild(el('line',{x1:pad.l,x2:W-pad.r,y1:y,y2:y,stroke:line,'stroke-width':1}));}
+    // area under visitas
+    var grad=el('linearGradient',{id:'ag',x1:0,y1:0,x2:0,y2:1});
+    grad.appendChild(el('stop',{offset:'0%','stop-color':data,'stop-opacity':.22}));
+    grad.appendChild(el('stop',{offset:'100%','stop-color':data,'stop-opacity':0}));
+    var defs=el('defs',{}); defs.appendChild(grad); svg.appendChild(defs);
+    svg.appendChild(el('path',{d:path(visitas,Yv)+'L'+X(n-1)+' '+(H-pad.b)+' L'+X(0)+' '+(H-pad.b)+' Z',fill:'url(#ag)'}));
+    // line (single series — visitas)
+    svg.appendChild(el('path',{d:path(visitas,Yv),fill:'none',stroke:data,'stroke-width':2.4,'stroke-linejoin':'round','stroke-linecap':'round'}));
+    // endpoint dot
+    svg.appendChild(el('circle',{cx:X(n-1),cy:Yv(visitas[n-1]),r:4,fill:data,stroke:cssv('--surface'),'stroke-width':2}));
+    // x labels
+    [0,6,13,20,29].forEach(function(i){
+      var t=el('text',{x:X(i),y:H-8,fill:muted,'font-size':11,'text-anchor':i===0?'start':(i===29?'end':'middle')});
+      t.textContent='Día '+(i+1); svg.appendChild(t);
+    });
+    // hover group
+    hoverLine=el('line',{x1:0,x2:0,y1:pad.t,y2:H-pad.b,stroke:muted,'stroke-width':1,'stroke-dasharray':'3 3',opacity:0});
+    hoverDot=el('circle',{r:5,fill:data,stroke:cssv('--surface'),'stroke-width':2,opacity:0});
+    svg.appendChild(hoverLine); svg.appendChild(hoverDot);
+  }
+  var hoverLine,hoverDot;
+  draw();
+
+  function move(ev){
+    var r=svg.getBoundingClientRect();
+    var px=(ev.touches?ev.touches[0].clientX:ev.clientX)-r.left;
+    var i=Math.round(((px/r.width*W)-pad.l)/((W-pad.l-pad.r)/(n-1)));
+    i=Math.max(0,Math.min(n-1,i)); if(isNaN(i))return;
+    var cx=X(i), cy=Yv(visitas[i]);
+    hoverLine.setAttribute('x1',cx); hoverLine.setAttribute('x2',cx); hoverLine.setAttribute('opacity',1);
+    hoverDot.setAttribute('cx',cx); hoverDot.setAttribute('cy',cy); hoverDot.setAttribute('opacity',1);
+    tip.style.opacity=1;
+    tip.style.left=(cx/W*r.width)+'px';
+    tip.style.top=(cy/H*r.height-14)+'px';
+    tip.innerHTML='<b>Día '+(i+1)+'</b> · '+visitas[i]+' visitas · '+contactos[i]+' contactos';
+  }
+  function leave(){hoverLine.setAttribute('opacity',0);hoverDot.setAttribute('opacity',0);tip.style.opacity=0;}
+  svg.addEventListener('mousemove',move); svg.addEventListener('mouseleave',leave);
+  svg.addEventListener('touchstart',move,{passive:true}); svg.addEventListener('touchmove',move,{passive:true});
+
+  // redraw on theme change
+  new MutationObserver(draw).observe(root,{attributes:true,attributeFilter:['data-theme']});
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
+})();
+</script>

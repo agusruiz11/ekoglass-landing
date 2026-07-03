@@ -23,15 +23,34 @@ export default function Hero() {
 
   return (
     <section className="relative isolate overflow-hidden min-h-[92vh] pt-16 sm:pt-20 flex items-end">
-      {/* Foto arquitectónica de fondo */}
-      <Image
-        src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=80"
-        alt="Ventanal arquitectónico con luz natural"
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover -z-10"
-      />
+      {/* Video de fondo: travelling sobre una fachada de vidrio (placeholder
+          genérico on-brand). Reemplazable por material real de Ekoglass en
+          /public/hero.mp4 + /public/hero-poster.jpg.
+          Respeta prefers-reduced-motion: si el usuario reduce el movimiento,
+          se muestra sólo el poster estático. */}
+      {reduce ? (
+        <Image
+          src="/hero-poster.jpg"
+          alt="Fachada de vidrio arquitectónico"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover -z-10"
+        />
+      ) : (
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster="/hero-poster.jpg"
+          aria-hidden
+          className="absolute inset-0 -z-10 h-full w-full object-cover"
+        >
+          <source src="/hero.mp4" type="video/mp4" />
+        </video>
+      )}
 
       {/* Capa esmerilada + degradado */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/75 via-ink/50 to-ink/90" />

@@ -66,7 +66,19 @@
       "Bash(google-chrome --headless=new --disable-gpu --no-sandbox --hide-scrollbars --window-size=390,13500 --virtual-time-budget=7500 --screenshot=/tmp/claude-1000/-home-elmapache-Documents-Posicionarte-ekoglass-landing/186d039d-886f-4ed3-80cb-1656368abdc2/scratchpad/home_m_tall.png file:///tmp/claude-1000/-home-elmapache-Documents-Posicionarte-ekoglass-landing/186d039d-886f-4ed3-80cb-1656368abdc2/scratchpad/lh.html)",
       "Bash(git config *)",
       "Bash(command -v gh)",
-      "Bash(gh auth *)"
+      "Bash(gh auth *)",
+      "WebSearch",
+      "Bash(pkill -f \"next-server\")",
+      "Skill(artifact-design)",
+      "Skill(artifact-design:*)",
+      "Skill(dataviz)",
+      "Skill(dataviz:*)",
+      "Bash(node scripts/validate_palette.js \"#C7220F,#0E7490,#64748B\" --mode light)",
+      "Bash(node scripts/validate_palette.js \"#EF5949,#22D3EE,#94A3B8\" --mode dark)",
+      "Bash(node scripts/validate_palette.js \"#C7220F,#0E7490\" --mode light)",
+      "Bash(node scripts/validate_palette.js \"#EF5949,#2CB8D4\" --mode dark)",
+      "Bash(node scripts/validate_palette.js \"#C7220F,#0891B2\" --mode light)",
+      "Bash(node scripts/validate_palette.js \"#EF5949,#3FB4CC\" --mode dark)"
     ]
   }
 }

@@ -1,0 +1,11 @@
+Logos de la Red Ekoglass
+========================
+
+Pegá acá los 17 logos de los representantes.
+
+- Formato ideal: PNG o SVG con FONDO TRANSPARENTE (se ven en gris y toman
+  color al pasar el mouse; con fondo blanco se notaría el recuadro).
+- Nombres de archivo: usá exactamente los del `src` en
+  src/data/representantes.ts (bianchi.png, cadivi.png, etc.).
+- Si cambiás un nombre o agregás uno, actualizalo también en ese archivo.
+- Altura de referencia: se muestran a ~44px de alto, ancho automático.

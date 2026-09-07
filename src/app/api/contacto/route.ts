@@ -74,11 +74,10 @@ export async function POST(req: Request) {
 
   const resend = new Resend(process.env.RESEND_API_KEY);
 
-  const lineas = [
-    `Nombre: ${nombre}`,
-    `Email: ${email}`,
-    empresa && `Empresa / Estudio: ${empresa}`,
-    telefono && `Teléfono: ${telefono}`,
+  const lineas: string[] = [`Nombre: ${nombre}`, `Email: ${email}`];
+  if (empresa) lineas.push(`Empresa / Estudio: ${empresa}`);
+  if (telefono) lineas.push(`Teléfono: ${telefono}`);
+  lineas.push(
     `Provincia: ${provincia}`,
     `Localidad: ${localidad}`,
     `Motivo: ${motivo}`,
@@ -86,9 +85,8 @@ export async function POST(req: Request) {
     "Consulta:",
     consulta,
     "",
-    "—",
-    "Enviado desde el formulario de contacto de ekoglass.com.ar",
-  ].filter((l) => l !== false && l !== undefined);
+    "Enviado desde el formulario de contacto de ekoglass.com.ar"
+  );
 
   const { error } = await resend.emails.send({
     from: FROM,

@@ -7,7 +7,6 @@ export type Representante = {
 };
 
 export const representantes: Representante[] = [
-  { name: "Bianchi y Cía", src: "/representantes/Bianchi-logo.png", web: "https://www.bianchiycia.com/" },
   { name: "Brocanelli S.A.", src: "/representantes/Brocanelli-logo.png", web: "http://www.brocanellisa.com.ar/" },
   { name: "Cadivi", src: "/representantes/Cadivi-logo.png", web: "https://www.cadivi.com.ar/" },
   { name: "Crystalcord", src: "/representantes/Cristalcord-logo.png", web: "https://www.crystalcord.com.ar/" },
@@ -25,4 +24,7 @@ export const representantes: Representante[] = [
   { name: "Vidrial", src: "/representantes/Vidrial-logo.png", web: "https://www.vidrial.com.ar/" },
   { name: "Vidrios Castelar S.A.", src: "/representantes/Vidrios-Castelar-Logo.png", web: "https://www.vidrioscastelarsa.com.ar/" },
   { name: "Vitrex S.A.", src: "/representantes/Vitrex_logo1.png", web: "https://vitrexsa.com.ar/" },
+  // Vidrios Bravi (Coppari Gabriel y Coppari Martín) entra en la red el 04/09/2026
+  // en reemplazo de Bianchi, que ya no pertenece. No tienen sitio web: enlaza a su Instagram.
+  { name: "Vidrios Bravi", src: "/representantes/Bravi-logo.png", web: "https://www.instagram.com/vidrios_bravi/" },
 ];

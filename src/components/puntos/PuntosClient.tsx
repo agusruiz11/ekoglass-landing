@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Search, Map as MapIcon, List, Star } from "lucide-react";
-import { puntosDeVenta } from "@/data/puntosDeVenta";
+import { puntosDeVenta, listadoProvisorio } from "@/data/puntosDeVenta";
 import CardPunto from "./CardPunto";
 
 // Leaflet no soporta SSR — se carga solo en cliente.
@@ -67,6 +67,19 @@ export default function PuntosClient() {
             Más de 100 vidrierías y distribuidores autorizados en todo el país,
             listos para asesorarte.
           </p>
+          {listadoProvisorio && (
+            <p
+              role="status"
+              className="mt-5 inline-flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+            >
+              <span aria-hidden className="mt-0.5">⚠</span>
+              <span>
+                <strong>Listado de ejemplo.</strong> Los puntos de venta, direcciones y
+                teléfonos que se muestran son ilustrativos hasta que se cargue el
+                listado verificado por Ekoglass.
+              </span>
+            </p>
+          )}
         </div>
 
         {/* Toggle mobile */}

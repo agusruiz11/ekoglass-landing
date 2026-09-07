@@ -53,7 +53,7 @@ export default function QueEsEkoglass() {
               <p className="mt-5 text-ink/75 text-lg leading-relaxed">
                 Es una unidad prefabricada de dos o más vidrios float paralelos,
                 sellada herméticamente en todo su perímetro, con una cámara
-                estanca deshidratada — con aire o gas inerte — que mejora
+                estanca deshidratada — con aire o argón — que mejora
                 sensiblemente el comportamiento térmico y acústico del
                 cerramiento. Cumple con la <strong>Norma IRAM 12598-1</strong>.
               </p>

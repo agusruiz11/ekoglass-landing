@@ -29,11 +29,11 @@ const faqs = [
   },
   {
     q: "¿Cuál es el tamaño máximo permitido para un DVH?",
-    a: "No hay un tamaño fijo: depende de la cantidad de lados de fijación (4, 3, 2 o 1 lado) y de la presión de viento de la zona. El DVH debe resistir las condiciones a las que esté expuesto.",
+    a: "No hay un tamaño fijo: depende de la cantidad de lados de fijación (4 o 3 lados) y de la presión de viento de la zona. El DVH debe resistir las condiciones a las que esté expuesto.",
   },
   {
     q: "¿Cómo se determina el espesor de los vidrios de un DVH?",
-    a: "Según el tamaño del paño, la cantidad de lados de fijación (4, 3, 2 o 1 lado) y la presión de viento predominante de la zona donde se coloca.",
+    a: "Según el tamaño del paño, la cantidad de lados de fijación (4 o 3 lados) y la presión de viento predominante de la zona donde se coloca.",
   },
   {
     q: "¿Cuál es la colocación correcta de los vidrios en un DVH?",

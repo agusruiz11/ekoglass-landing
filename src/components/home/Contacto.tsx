@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-import { MapPin, Phone, Send, CheckCircle2 } from "lucide-react";
+import { useState, type FormEvent, type ReactNode } from "react";
+import { MapPin, Phone, Send, CheckCircle2, Loader2 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { socials } from "@/data/socials";
 
@@ -45,6 +45,36 @@ function Field({
 
 export default function Contacto() {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Envía el formulario a /api/contacto (Resend). Los campos se leen por su
+  // atributo `name`, así el formulario sigue siendo HTML plano y accesible.
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = Object.fromEntries(new FormData(form).entries());
+    setSending(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/contacto", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (!res.ok || !json.ok) {
+        setError(json.error ?? "No pudimos enviar tu consulta. Probá de nuevo en unos minutos.");
+        return;
+      }
+      form.reset();
+      setSent(true);
+    } catch {
+      setError("No pudimos enviar tu consulta. Revisá tu conexión e intentá de nuevo.");
+    } finally {
+      setSending(false);
+    }
+  }
 
   return (
     <section id="contacto" className="section relative bg-white">
@@ -119,30 +149,33 @@ export default function Contacto() {
                   </button>
                 </div>
               ) : (
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    setSent(true);
-                  }}
-                  className="space-y-4"
-                >
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Honeypot anti-spam: oculto para personas, los bots lo completan. */}
+                  <input
+                    type="text"
+                    name="website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    className="hidden"
+                  />
                   <Field label="Nombre y Apellido" required>
-                    <input required type="text" autoComplete="name" className={inputCls} />
+                    <input required name="nombre" type="text" autoComplete="name" className={inputCls} />
                   </Field>
                   <Field label="Correo electrónico" required>
-                    <input required type="email" autoComplete="email" className={inputCls} />
+                    <input required name="email" type="email" autoComplete="email" className={inputCls} />
                   </Field>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <Field label="Empresa / Estudio">
-                      <input type="text" className={inputCls} />
+                      <input name="empresa" type="text" className={inputCls} />
                     </Field>
                     <Field label="Teléfono / Celular">
-                      <input type="tel" autoComplete="tel" className={inputCls} />
+                      <input name="telefono" type="tel" autoComplete="tel" className={inputCls} />
                     </Field>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <Field label="Provincia" required>
-                      <select required defaultValue="" className={inputCls}>
+                      <select required name="provincia" defaultValue="" className={inputCls}>
                         <option value="" disabled>
                           Elegí una provincia
                         </option>
@@ -152,11 +185,11 @@ export default function Contacto() {
                       </select>
                     </Field>
                     <Field label="Localidad / Barrio" required>
-                      <input required type="text" className={inputCls} />
+                      <input required name="localidad" type="text" className={inputCls} />
                     </Field>
                   </div>
                   <Field label="Motivo de la consulta" required>
-                    <select required defaultValue="" className={inputCls}>
+                    <select required name="motivo" defaultValue="" className={inputCls}>
                       <option value="" disabled>
                         Elegí un motivo
                       </option>
@@ -166,12 +199,22 @@ export default function Contacto() {
                     </select>
                   </Field>
                   <Field label="Consulta" required>
-                    <textarea required rows={4} className={inputCls} />
+                    <textarea required name="consulta" rows={4} className={inputCls} />
                   </Field>
 
-                  <button type="submit" className="btn-primary w-full justify-center">
-                    <Send className="h-4 w-4" />
-                    Enviar consulta
+                  {error && (
+                    <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
+                      {error}
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className="btn-primary w-full justify-center disabled:opacity-60"
+                  >
+                    {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    {sending ? "Enviando…" : "Enviar consulta"}
                   </button>
                   <p className="text-center text-xs text-ink/50">
                     Los campos con * son obligatorios.

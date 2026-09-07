@@ -1,4 +1,9 @@
-// PLACEHOLDER — reemplazar por data real del cliente
+// PLACEHOLDER — reemplazar por data real del cliente.
+// Ekoglass manda el Excel verificado (nombre, teléfono, mail, WhatsApp, dirección)
+// después del de Blindex (mail de Manuel, 04/09/2026). Mientras tanto la página
+// muestra un aviso: poner `listadoProvisorio` en false cuando se cargue la data real.
+export const listadoProvisorio = true;
+
 export type PuntoDeVenta = {
   id: string;
   nombre: string;

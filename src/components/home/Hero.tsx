@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { trackCta } from "@/lib/tracking";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Home, Building2 } from "lucide-react";
@@ -22,7 +23,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative isolate overflow-hidden min-h-[92vh] pt-16 sm:pt-20 flex items-end">
+    <section id="hero" className="relative isolate overflow-hidden min-h-[92vh] pt-16 sm:pt-20 flex items-end">
       {/* Video de fondo: travelling sobre una fachada de vidrio (placeholder
           genérico on-brand). Reemplazable por material real de Ekoglass en
           /public/hero.mp4 + /public/hero-poster.jpg.
@@ -115,12 +116,12 @@ export default function Hero() {
           variants={item}
           className="mt-9 flex flex-col sm:flex-row gap-3"
         >
-          <Link href="#aplicaciones" className="btn-primary">
+          <Link href="#aplicaciones" className="btn-primary" onClick={() => trackCta("hogar")}>
             <Home className="h-4 w-4" />
             Ekoglass para el hogar
             <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link href="#donde-comprar" className="btn-ghost">
+          <Link href="#donde-comprar" className="btn-ghost" onClick={() => trackCta("profesionales")}>
             <Building2 className="h-4 w-4" />
             Ekoglass para profesionales
           </Link>

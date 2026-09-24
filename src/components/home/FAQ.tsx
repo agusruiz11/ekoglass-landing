@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { trackFaqAbierta } from "@/lib/tracking";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Plus } from "lucide-react";
 import Reveal from "@/components/Reveal";
@@ -69,7 +70,10 @@ export default function FAQ() {
             return (
               <div key={f.q}>
                 <button
-                  onClick={() => setOpen(isOpen ? null : i)}
+                  onClick={() => {
+                    if (!isOpen) trackFaqAbierta(f.q);
+                    setOpen(isOpen ? null : i);
+                  }}
                   aria-expanded={isOpen}
                   className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left transition hover:bg-brand-50/40 sm:px-6"
                 >

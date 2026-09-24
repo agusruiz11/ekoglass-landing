@@ -1,6 +1,7 @@
 "use client";
 
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { trackContacto } from "@/lib/tracking";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useRef } from "react";
@@ -147,6 +148,7 @@ export default function MapaPuntos({ puntos, selectedId, onSelect }: Props) {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackContacto("whatsapp", p, "mapa")}
                 className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#25D366] px-3 py-1.5 text-xs font-semibold text-white"
               >
                 WhatsApp

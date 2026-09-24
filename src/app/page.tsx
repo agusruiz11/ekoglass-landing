@@ -8,6 +8,7 @@ import Proyectos from "@/components/home/Proyectos";
 import FAQ from "@/components/home/FAQ";
 import Contacto from "@/components/home/Contacto";
 import CTABand from "@/components/home/CTABand";
+import TrackSecciones from "@/components/TrackSecciones";
 
 export default function HomePage() {
   return (
@@ -22,6 +23,8 @@ export default function HomePage() {
       <FAQ />
       <Contacto />
       <CTABand />
+      {/* Evento seccion_vista por cada <section id> de la home. */}
+      <TrackSecciones />
     </>
   );
 }

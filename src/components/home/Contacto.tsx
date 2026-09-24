@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent, type ReactNode } from "react";
+import { trackFormEnviado } from "@/lib/tracking";
 import { MapPin, Phone, Send, CheckCircle2, Loader2 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { socials } from "@/data/socials";
@@ -69,6 +70,7 @@ export default function Contacto() {
       }
       form.reset();
       setSent(true);
+      trackFormEnviado("contacto", typeof data.motivo === "string" ? data.motivo : undefined);
     } catch {
       setError("No pudimos enviar tu consulta. Revisá tu conexión e intentá de nuevo.");
     } finally {

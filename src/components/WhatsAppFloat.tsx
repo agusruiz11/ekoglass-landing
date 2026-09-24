@@ -1,3 +1,7 @@
+"use client";
+
+import { trackWhatsAppFlotante } from "@/lib/tracking";
+
 // Botón flotante de WhatsApp (visible en todas las páginas).
 // ⚠️ REEMPLAZAR por el WhatsApp real de Ekoglass (celular, formato internacional
 // sin "+" ni espacios). El valor actual es un placeholder con el fijo de la empresa.
@@ -12,6 +16,7 @@ export default function WhatsAppFloat() {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={trackWhatsAppFlotante}
       aria-label="Escribinos por WhatsApp"
       className="group fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-black/25 transition hover:scale-105 hover:bg-[#20BA5A] sm:bottom-6 sm:right-6"
     >

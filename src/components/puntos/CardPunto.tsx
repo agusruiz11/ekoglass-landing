@@ -3,6 +3,7 @@
 import { forwardRef } from "react";
 import { MessageCircle, MapPin, Phone, Navigation, Star } from "lucide-react";
 import type { PuntoDeVenta } from "@/data/puntosDeVenta";
+import { trackContacto } from "@/lib/tracking";
 
 type Props = {
   punto: PuntoDeVenta;
@@ -68,7 +69,10 @@ const CardPunto = forwardRef<HTMLElement, Props>(function CardPunto(
           href={waHref}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            trackContacto("whatsapp", punto);
+          }}
           className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-emerald-500/20 hover:brightness-110 transition"
           aria-label={`Contactar por WhatsApp a ${punto.nombre}`}
         >
@@ -80,7 +84,10 @@ const CardPunto = forwardRef<HTMLElement, Props>(function CardPunto(
             href={mapsHref}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              trackContacto("como_llegar", punto);
+            }}
             className="inline-flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-ink hover:border-brand-300 hover:text-brand-700 transition"
             aria-label={`Cómo llegar a ${punto.nombre}`}
           >
@@ -90,7 +97,10 @@ const CardPunto = forwardRef<HTMLElement, Props>(function CardPunto(
           {telHref ? (
             <a
               href={telHref}
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                trackContacto("llamada", punto);
+              }}
               className="inline-flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-ink hover:border-brand-300 hover:text-brand-700 transition"
               aria-label={`Llamar a ${punto.nombre}`}
             >

@@ -51,7 +51,7 @@ function Counter({
 export default function Stats() {
   const reduce = useReducedMotion();
   return (
-    <section className="section relative isolate overflow-hidden">
+    <section id="stats" className="section relative isolate overflow-hidden">
       <div className="absolute inset-0 -z-10 bg-gradient-to-br from-ink via-brand-900 to-brand-800" />
       <div
         aria-hidden

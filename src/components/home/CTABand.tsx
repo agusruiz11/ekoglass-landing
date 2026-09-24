@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { trackCta } from "@/lib/tracking";
 import { MapPin, ArrowRight } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -41,6 +42,7 @@ export default function CTABand() {
 
             <Link
               href="/puntos-de-venta"
+              onClick={() => trackCta("cta_puntos_de_venta")}
               className="btn bg-white text-brand-700 hover:bg-ink hover:text-white shadow-lg hover:-translate-y-0.5 transition"
             >
               Ver puntos de venta

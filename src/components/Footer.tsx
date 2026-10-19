@@ -95,7 +95,15 @@ export default function Footer() {
             Marca registrada de Vidriería Argentina S.A. — Todos los derechos reservados.
           </p>
           <p className="text-xs text-ink/60">
-            Cumple normas IRAM 12598-1. © {new Date().getFullYear()} Ekoglass.
+            Cumple normas IRAM 12598-1. © {new Date().getFullYear()} Ekoglass. Hecho por{" "}
+            <a
+              href="https://posicionarte.online"
+              target="_blank"
+              rel="noopener"
+              className="underline decoration-ink/25 underline-offset-2 hover:text-brand-600"
+            >
+              posicionarte.online
+            </a>
           </p>
         </div>
       </div>

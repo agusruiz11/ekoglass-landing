@@ -1,23 +1,10 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
+import { clean, emailValido, enviarMail } from "@/lib/mail";
 
-// Envío del formulario de contacto de la home.
-//
-// Variables de entorno (Vercel → Settings → Environment Variables, y .env local):
-//   RESEND_API_KEY   clave de Resend (obligatoria)
-//   CONTACT_TO       casilla que recibe las consultas. Definida por el cliente el
-//                    04/09/2026: estefania.cruz@ar.nsg.com
-//   CONTACT_FROM     remitente. Tiene que ser de un dominio verificado en Resend,
-//                    p. ej. "Ekoglass Web <web@posicionarte.online>" hasta que se
-//                    verifique ekoglass.com.ar.
-//
-// Sin RESEND_API_KEY el endpoint responde 500 y el formulario muestra el error:
-// preferible a un "enviado" que no envía nada.
+// Envío del formulario de contacto de la home. Configuración SMTP y
+// variables de entorno en src/lib/mail.ts (desde el 21/10/2026, antes Resend).
 
 export const runtime = "nodejs";
-
-const TO = process.env.CONTACT_TO ?? "estefania.cruz@ar.nsg.com";
-const FROM = process.env.CONTACT_FROM ?? "Ekoglass Web <onboarding@resend.dev>";
 
 type Payload = {
   nombre?: string;
@@ -30,9 +17,6 @@ type Payload = {
   consulta?: string;
   website?: string; // honeypot: los humanos no lo ven, los bots lo completan
 };
-
-const clean = (v: unknown, max = 500) =>
-  typeof v === "string" ? v.trim().slice(0, max) : "";
 
 export async function POST(req: Request) {
   let body: Payload;
@@ -60,19 +44,9 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!emailValido(email)) {
     return NextResponse.json({ ok: false, error: "El email no es válido." }, { status: 400 });
   }
-
-  if (!process.env.RESEND_API_KEY) {
-    console.error("[contacto] Falta RESEND_API_KEY");
-    return NextResponse.json(
-      { ok: false, error: "El envío no está configurado." },
-      { status: 500 }
-    );
-  }
-
-  const resend = new Resend(process.env.RESEND_API_KEY);
 
   const lineas: string[] = [`Nombre: ${nombre}`, `Email: ${email}`];
   if (empresa) lineas.push(`Empresa / Estudio: ${empresa}`);
@@ -88,21 +62,12 @@ export async function POST(req: Request) {
     "Enviado desde el formulario de contacto de ekoglass.com.ar"
   );
 
-  const { error } = await resend.emails.send({
-    from: FROM,
-    to: [TO],
-    replyTo: email,
-    subject: `[Web Ekoglass] ${motivo} — ${nombre}`,
+  const r = await enviarMail({
+    subject: `[Web Ekoglass] ${motivo}: ${nombre}`,
     text: lineas.join("\n"),
+    replyTo: email,
   });
 
-  if (error) {
-    console.error("[contacto] Resend:", error);
-    return NextResponse.json(
-      { ok: false, error: "No pudimos enviar tu consulta. Probá de nuevo en unos minutos." },
-      { status: 502 }
-    );
-  }
-
+  if (!r.ok) return NextResponse.json({ ok: false, error: r.error }, { status: r.status });
   return NextResponse.json({ ok: true });
 }

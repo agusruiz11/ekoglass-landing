@@ -5,3 +5,6 @@ out
 .DS_Store
 *.log
 .env
+
+# paquetes para RH Studio (scripts/empaquetar.sh)
+/entrega

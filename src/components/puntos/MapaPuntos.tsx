@@ -4,7 +4,8 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { trackContacto } from "@/lib/tracking";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useEffect, useRef } from "react";
+import "maplibre-gl/dist/maplibre-gl.css";
+import { useEffect, useRef, useState } from "react";
 import type { PuntoDeVenta } from "@/data/puntosDeVenta";
 
 // Fix bug clásico de íconos de marker en bundlers modernos (Next.js).
@@ -16,6 +17,77 @@ L.Icon.Default.mergeOptions({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
+
+// Fondo del mapa: estilo Positron de OpenFreeMap (sin clave ni límite de
+// visitas), dibujado con MapLibre. Si OpenFreeMap no responde o el navegador
+// no puede dibujarlo, vuelve a las imágenes de OpenStreetMap de antes.
+const URL_ESTILO = "https://tiles.openfreemap.org/styles/positron";
+const CREDITO_OPENFREEMAP =
+  '<a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank">&copy; OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> · Ekoglass';
+
+function FondoMapa() {
+  const map = useMap();
+  const [respaldo, setRespaldo] = useState(false);
+
+  useEffect(() => {
+    if (respaldo) return;
+    let capa: L.Layer | null = null;
+    let cancelado = false;
+    const usarRespaldo = () => {
+      if (!cancelado) setRespaldo(true);
+    };
+
+    (async () => {
+      try {
+        // El estilo se pide antes de bajar MapLibre (pesa): si OpenFreeMap no
+        // responde en 8 s, la librería ni se descarga.
+        const r = await fetch(URL_ESTILO, { signal: AbortSignal.timeout(8000) });
+        if (!r.ok) throw new Error(`estilo ${r.status}`);
+        const estilo = await r.json();
+        const { maplibreGL } = await import("@maplibre/maplibre-gl-leaflet");
+        if (cancelado) return;
+        const gl = maplibreGL({
+          style: estilo,
+          attributionControl: { customAttribution: CREDITO_OPENFREEMAP },
+        });
+        capa = gl;
+        gl.addTo(map);
+        // Errores antes del primer tile: OpenFreeMap caído a medias. Después
+        // se ignoran, para no cambiar de mapa con uno ya dibujado.
+        let tilesCargados = 0;
+        const glMap = gl.getMaplibreMap();
+        glMap.on("data", (e) => {
+          if (e.dataType === "source" && "tile" in e && e.tile) tilesCargados++;
+        });
+        glMap.on("error", () => {
+          if (tilesCargados === 0) usarRespaldo();
+        });
+      } catch {
+        // Sin WebGL, sin red o estilo inválido.
+        usarRespaldo();
+      }
+    })();
+
+    return () => {
+      cancelado = true;
+      if (capa) {
+        try {
+          map.removeLayer(capa);
+        } catch {
+          // La capa pudo quedar a medio agregar si MapLibre falló al crearse.
+        }
+      }
+    };
+  }, [map, respaldo]);
+
+  if (!respaldo) return null;
+  return (
+    <TileLayer
+      attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> · Ekoglass'
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    />
+  );
+}
 
 // Pin custom en color de marca (SVG inline)
 const brandPin = (active: boolean) =>
@@ -110,10 +182,7 @@ export default function MapaPuntos({ puntos, selectedId, onSelect }: Props) {
       className="h-full w-full rounded-2xl"
       style={{ minHeight: 400 }}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> · Ekoglass'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      <FondoMapa />
 
       <FlyToSelected puntos={puntos} selectedId={selectedId} />
       <InvalidateOnResize />
